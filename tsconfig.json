@@ -1,0 +1,25 @@
+{
+  "include": ["src", "types"],
+  "compilerOptions": {
+    "module": "CommonJS",
+    "target": "ES2018",
+    "lib": ["esnext"],
+    "importHelpers": true,
+    "declaration": true,
+    "sourceMap": true,
+    "outDir": "build",
+    "strict": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "downlevelIteration": true,
+    "skipDefaultLibCheck": true,
+    "allowJs": true
+  }
+}

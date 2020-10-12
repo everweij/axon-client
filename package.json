@@ -1,0 +1,67 @@
+{
+  "name": "axon-client",
+  "description": "Unofficial NodeJS client for Axon Server",
+  "version": "0.1.0",
+  "main": "build/index.js",
+  "typings": "build/index.d.ts",
+  "author": "Erik Verweij",
+  "files": [
+    "build"
+  ],
+  "keywords": [
+    "axon",
+    "server",
+    "client",
+    "axoniq",
+    "framework",
+    "typescript",
+    "nodejs",
+    "grpc"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "homepage": "https://github.com/everweij/axon-client",
+  "repository": {
+    "url": "https://github.com/everweij/axon-client"
+  },
+  "license": "MIT",
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsdx lint"
+    }
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "dependencies": {
+    "google-protobuf": "^3.0.0",
+    "grpc": "^1.11.0",
+    "uuid": "^3.3.3",
+    "xml-js": "^1.6.11"
+  },
+  "peerDependencies": {
+    "rxjs": ">=6"
+  },
+  "devDependencies": {
+    "@types/uuid": "^8.3.0",
+    "axon-server-api": "https://github.com/AxonIQ/axon-server-api#5d3a7df5d8bf7ca0a1e15af16fe7ef1c7516ea36",
+    "grpc-tools": "1.8.0",
+    "husky": "^4.3.0",
+    "prettier": "^2.1.2",
+    "rxjs": "^6.6.3",
+    "ts-node": "^9.0.0",
+    "ts-protoc-gen": "^0.13.0",
+    "tslib": "^2.0.2",
+    "typescript": "^4.0.3"
+  },
+  "scripts": {
+    "start": "ts-node ./src/index2.ts",
+    "build": "rm -rf ./build && npm run convert-proto && tsc",
+    "convert-proto": "node ./scripts/convert-proto.js",
+    "tmp": "rm -rf ./build && rollup -c"
+  }
+}
