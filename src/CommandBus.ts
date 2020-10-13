@@ -74,7 +74,7 @@ export class CommandBus {
   private openStream() {
     this.commandStream = this.commandClient.openStream(this.meta);
 
-    this.commandStream.on('data', (d) => {
+    this.commandStream.on('data', async (d) => {
       const inbound = Object.assign(
         new CommandProviderInbound(),
         d
@@ -101,6 +101,10 @@ export class CommandBus {
         reply = subscription.operation(
           command.payload ? fromJson(command.payload.data as string) : undefined
         );
+
+        if ('then' in reply) {
+          reply = await reply;
+        }
       } catch (e) {
         const err = new ErrorMessage();
         err.setMessage(e);

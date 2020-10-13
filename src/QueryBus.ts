@@ -83,7 +83,7 @@ export class QueryBus {
   private openStream() {
     this.queryStream = this.queryClient.openStream(this.meta);
 
-    this.queryStream.on('data', (d) => {
+    this.queryStream.on('data', async (d) => {
       const inbound = Object.assign(
         new QueryProviderInbound(),
         d
@@ -110,6 +110,10 @@ export class QueryBus {
         reply = subscription.operation(
           query.payload ? fromJson(query.payload.data as string) : undefined
         );
+
+        if ('then' in reply) {
+          reply = await reply;
+        }
       } catch (e) {
         const err = new ErrorMessage();
         err.setMessage(e);
