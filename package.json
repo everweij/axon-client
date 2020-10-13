@@ -1,7 +1,7 @@
 {
   "name": "axon-client",
   "description": "Unofficial NodeJS client for Axon Server",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "main": "build/index.js",
   "typings": "build/index.d.ts",
   "author": "Erik Verweij",
