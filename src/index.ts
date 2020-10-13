@@ -9,6 +9,9 @@ export {
   ListAggregateEventsOptions,
   ListAggregateSnapshotsOptions,
   ListEventOptions,
+  NumericQueryOperator,
+  QueryEventsOptions,
+  QueryItem,
 } from './EventBus';
 export { Platform } from './Platform';
 export { QueryBus, QueryOptions, QueryResult } from './QueryBus';

@@ -31,8 +31,6 @@ export class Platform {
     this.endpoint = endpoint;
     this.clientIdentification = clientIdentification;
     this.credentials = credentials;
-
-    this.openStream();
   }
 
   getPlatformServer() {
@@ -57,7 +55,7 @@ export class Platform {
             this.client = new PlatformServiceClient(endpoint, this.credentials);
           }
 
-          this.client.openStream();
+          this.openStream();
 
           resolve(endpoint);
         }
@@ -67,7 +65,7 @@ export class Platform {
 
   openStream() {
     const controlStream = this.client.openStream(this.meta);
-    controlStream.on('data', function(d) {
+    controlStream.on('data', function (d) {
       const data = Object.assign(
         new PlatformOutboundInstruction(),
         d
@@ -76,11 +74,11 @@ export class Platform {
       console.info(data.toObject());
     });
 
-    controlStream.on('error', function(err) {
+    controlStream.on('error', function (err) {
       console.warn('Axon-Server control stream error: ', err);
     });
 
-    controlStream.on('end', function() {
+    controlStream.on('end', function () {
       console.warn('Axon-Server control stream ended');
     });
 

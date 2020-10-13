@@ -57,9 +57,8 @@
     "typescript": "^4.0.3"
   },
   "scripts": {
-    "start": "ts-node ./src/index2.ts",
+    "start": "ts-node ./test.ts",
     "build": "rm -rf ./build && npm run convert-proto && tsc",
-    "convert-proto": "node ./scripts/convert-proto.js",
-    "tmp": "rm -rf ./build && rollup -c"
+    "convert-proto": "node ./scripts/convert-proto.js"
   }
 }
