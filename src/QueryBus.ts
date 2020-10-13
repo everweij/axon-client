@@ -330,10 +330,7 @@ export class QueryBus {
           },
         }),
       },
-    }).then((r) => ({
-      ...r,
-      payload: r.payload.data,
-    }));
+    });
   }
 
   close() {
