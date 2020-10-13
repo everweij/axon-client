@@ -24,7 +24,7 @@ function createMeta(token?: string) {
   return meta;
 }
 
-interface Options {
+export interface ClientOptions {
   host: string;
   port?: number;
   certificate?: Buffer;
@@ -51,7 +51,7 @@ export class AxonClient {
     certificate,
     port = 8124,
     token,
-  }: Options) {
+  }: ClientOptions) {
     const endpoint = `${host}:${port}`;
     const clientIdentification = createClientIdentification(
       clientId,

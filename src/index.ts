@@ -1,4 +1,4 @@
-export { AxonClient } from './Client';
+export { AxonClient, ClientOptions } from './Client';
 export { CommandBus, DispatchOptions, DispatchResponse } from './CommandBus';
 export {
   AggregateEvent,

@@ -50,7 +50,10 @@ export class CommandBus {
     CommandProviderOutbound,
     CommandProviderInbound
   >;
-  private subscriptions: Record<string, AnyFunction> = {};
+  private subscriptions: Record<
+    string,
+    { responseType: string; operation: AnyFunction }
+  > = {};
   private permits = 500;
 
   constructor({ meta, credentials, endpoint, clientIdentification }: Options) {
@@ -71,7 +74,7 @@ export class CommandBus {
   private openStream() {
     this.commandStream = this.commandClient.openStream(this.meta);
 
-    this.commandStream.on('data', d => {
+    this.commandStream.on('data', (d) => {
       const inbound = Object.assign(
         new CommandProviderInbound(),
         d
@@ -83,9 +86,9 @@ export class CommandBus {
 
       const command = inbound.getCommand()!.toObject();
 
-      const operation = this.subscriptions[command.name];
+      const subscription = this.subscriptions[command.name];
 
-      if (!operation) {
+      if (!subscription) {
         return;
       }
 
@@ -95,7 +98,7 @@ export class CommandBus {
 
       let reply;
       try {
-        reply = operation(
+        reply = subscription.operation(
           command.payload ? fromJson(command.payload.data as string) : undefined
         );
       } catch (e) {
@@ -109,7 +112,7 @@ export class CommandBus {
 
       if (reply) {
         const payload = new SerializedObject();
-        payload.setType('JSON');
+        payload.setType(subscription.responseType);
         payload.setRevision('');
         payload.setData(toJson(reply));
         response.setPayload(payload);
@@ -120,7 +123,7 @@ export class CommandBus {
       this.commandStream.write(outbound);
     });
 
-    this.commandStream.on('error', err => console.error(err));
+    this.commandStream.on('error', (err) => console.error(err));
 
     const openResponse = new CommandProviderOutbound();
     const flowControl = new FlowControl();
@@ -131,12 +134,25 @@ export class CommandBus {
     this.commandStream.write(openResponse);
   }
 
-  subscribe(commandName: string, operation: AnyFunction): Unsubscriber {
+  subscribe(
+    commandName: string,
+    operation: AnyFunction,
+    responseType: string
+  ): Unsubscriber {
+    if (this.subscriptions[commandName]) {
+      throw new Error(
+        `There is already a command-subscription for '${commandName}'`
+      );
+    }
+
     if (!this.commandStream) {
       this.openStream();
     }
 
-    this.subscriptions[commandName] = operation;
+    this.subscriptions[commandName] = {
+      operation,
+      responseType,
+    };
 
     const outbound = new CommandProviderOutbound();
     const subscription = new CommandSubscription();

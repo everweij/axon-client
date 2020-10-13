@@ -59,7 +59,10 @@ export class QueryBus {
     QueryProviderOutbound,
     QueryProviderInbound
   >;
-  private subscriptions: Record<string, AnyFunction> = {};
+  private subscriptions: Record<
+    string,
+    { responseType: string; operation: AnyFunction }
+  > = {};
   private permits = 500;
 
   constructor({ meta, credentials, endpoint, clientIdentification }: Options) {
@@ -92,9 +95,9 @@ export class QueryBus {
 
       const query = inbound.getQuery()!.toObject();
 
-      const operation = this.subscriptions[query.query];
+      const subscription = this.subscriptions[query.query];
 
-      if (!operation) {
+      if (!subscription) {
         return;
       }
 
@@ -104,7 +107,7 @@ export class QueryBus {
 
       let reply;
       try {
-        reply = operation(
+        reply = subscription.operation(
           query.payload ? fromJson(query.payload.data as string) : undefined
         );
       } catch (e) {
@@ -120,7 +123,7 @@ export class QueryBus {
 
       if (reply) {
         const payload = new SerializedObject();
-        payload.setType('JSON');
+        payload.setType(subscription.responseType);
         payload.setRevision('');
         payload.setData(toJson(reply));
         response.setPayload(payload);
@@ -149,17 +152,30 @@ export class QueryBus {
     this.queryStream.write(openResponse);
   }
 
-  subscribe(queryName: string, operation: AnyFunction): Unsubscriber {
+  subscribe(
+    queryName: string,
+    operation: AnyFunction,
+    responseType: string
+  ): Unsubscriber {
+    if (this.subscriptions[queryName]) {
+      throw new Error(
+        `There is already a query-subscription for '${queryName}'`
+      );
+    }
+
     if (!this.queryStream) {
       this.openStream();
     }
 
-    this.subscriptions[queryName] = operation;
+    this.subscriptions[queryName] = {
+      operation,
+      responseType,
+    };
 
     const outbound = new QueryProviderOutbound();
     const subscription = new QuerySubscription();
     subscription.setQuery(queryName);
-    subscription.setResultName('JSON');
+    subscription.setResultName(responseType);
     subscription.setClientId(this.clientIdentification.getClientId());
     subscription.setComponentName(this.clientIdentification.getComponentName());
     outbound.setSubscribe(subscription);
